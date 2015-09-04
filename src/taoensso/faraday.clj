@@ -92,8 +92,8 @@
     (db-client* {:creds my-AWSCredentials-instance}),
     etc."
   (memoize
-   (fn [{:keys [provider creds access-key secret-key endpoint proxy-host proxy-port
-                proxy-username proxy-password
+   (fn [{:keys [provider creds access-key secret-key endpoint region
+                proxy-host proxy-port proxy-username proxy-password
                conn-timeout max-conns max-error-retry socket-timeout]
         :as client-opts}]
      (if (empty? client-opts) (AmazonDynamoDBClient.) ; Default client
@@ -120,6 +120,7 @@
          (doto-cond [g (if provider
                          (AmazonDynamoDBClient. provider  client-config)
                          (AmazonDynamoDBClient. aws-creds client-config))]
+           region   (.setRegion g)
            endpoint (.setEndpoint g)))))))
 
 (defn- db-client ^AmazonDynamoDB [client-opts] (db-client* client-opts))
